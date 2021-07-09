@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ $# -eq 1 ]; then
+ echo "compiling $1.c..." &&
+ gcc "$1".c -o "$1" -ffast-math -O -lm -lGL -lglut -std=gnu99 -Wno-implicit-function-declaration &&  # we suppress warnings because it's common for <GL/gl.h> to not contain as many functions as the linker's GL library
+ echo "running ./$1" &&
+ ./"$1"
+else
+ echo "Compiles and runs C source code, using some preset settings (OpenGL)"
+ echo "For example:"
+ echo "    $0 stars"
+ echo "would compile stars.c and generate & run ./stars"
+fi

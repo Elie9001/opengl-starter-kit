@@ -1,0 +1,144 @@
+Frequently Asked Questions
+--------------------------
+
+
+== Why the f*** are you implementing main() in a header file? ==
+
+Because 95% of the time, it's easier to avoid main() and work with a different model:
+
+ init(): this gets called once at startup
+ draw(): this gets called 60 times per second (or whatever your screen refresh rate is)
+ done(): this gets called once at shutdown
+
+You implement these 3 functions, and everything else gets taken care of by fullscreen_main.h.
+Keyboard & mouse inputs are available as global variables:
+; _mouse_dx, _mouse_dy
+; keymap[] to check whether a key is down or up
+
+Things that motivated me to use this init-draw-done (IDD) model:
+
+1. Whenever I would try to learn how to do something in OpenGL, the code examples would suck. They would either be:
+   - tiny snippets of code, out of context
+   - a full working example but with lots of spaghetti code, hard to find the parts that I actually need
+
+2. I wanted to be able to swap out all the context stuff, so it wouldn't matter if I was using GLFW, GLUT, GLX, SDL or Win32. OpenGL is supposed to be universal, so let's make it universal.
+
+3. I got the idea from Arduino's model (init() and loop(), which are used instead of main())
+
+Note: Don't use the IDD model for non-animated things. For example, I didn't use it in my 'Fix Paper' app. That's because the window only has to be updated when you click or drag the mouse.
+      But for anything that moves on its own, the IDD model is awesome.
+
+
+== Ok but why didn't you make it fullscreen_main.c instead of fullscreen_main.h? ==
+
+I personally like the feel of "one .c file produces one executable":
+- It makes C feel more like a scripting language.
+- Good for rapid development.
+- I can keep multiple demos in one folder without any confusion.
+
+
+
+
+
+== Why do points disappear when their centre goes off screen? The popping is annoying ==
+
+It's a crappy OpenGL standard, due to a half-assed consideration for Point Sprites (they were probably a low priority feature). The best we can about it, is to extend the viewport slightly off screen - and that comes with its own complications.
+I was thinking of making a geometry shader to convert all GL_POINTS into GL_QUADS, but
+ 1. It'll probably be way slower, inefficient, wasteful. Quads are two triangles, and triangles are designed to handle all kinds of different orientations and perspective texturing. That's way more computational complexity than simply shading a square of pixels, which is all we need.
+ 2. There's no guarantee that the same problem won't happen. Points with the centre off-screen, might still get culled before they get a chance to be converted into quads.
+
+
+== Why do you indent your code with spaces instead of tabs? ==
+
+Tabs suck. They show up differently depending on the 'tab width' settings of your editor. Also, it's too easy to accidentally mix tabs and spaces without ever knowing it. Then when someone else opens your code, it looks ugly as duck.
+I know a lot of people use 4 spaces per indent. But I find that pattern falls apart way too easily. All it takes is: accidentally starting a line with an odd number of spaces.
+In my opinion, 1 space per indent is good enough. And I still use bigger indents to align matrix code etc - and the alignment won't fall apart if you change the 'tab width' settings of your editor.
+
+
+
+
+
+----------------
+== FAQ Part 2 ==
+These are questions I ran into while developing.
+It took me WAY TOO LONG to find the answers.
+So I decided to put them all here.
+----------------
+
+
+
+
+== What's the difference between GL, GLX, GLU, GLUT, GLFW, GLM, WGL, CGL, SDL, ... I just wanna use OpenGL! ==
+
+Pure OpenGL code (GL) will specify "what to draw", but it lacks real-life context about "where to draw it" - such as:
+- In a window?
+- Fullscreen?
+- Multiple screens?
+- Send it to a printer? Etc
+For each of these, OpenGL is the same, but the "context" is different.
+Different operating systems have different libraries to create the context:
+- Linux uses GLX
+- Windows uses WGL
+- Mac OS uses CGL
+
+GLUT was designed to make your code more portable, to work on multiple operating systems. It deals with GLX/WGL/CGL behind the scenes. GLUT can also read input from the keyboard and mouse (again, by using OS-specific stuff behind the scenes).
+
+Same with GLFW and SDL, they serve the same purpose (portable code).
+Which one to use? Depends. They each have pros and cons.
+
+I don't like having to worry about all this context stuff.
+That's why I just kept it all in fullscreen_main.h.
+The context is automatically specified:
+- fullscreen
+- double buffer
+- vsync
+In my opinion, this is the fastest most comfortable way to work with OpenGL.
+
+GLU is an old library with some functions that might make OpenGL a little easier to use. Personally I haven't found it that useful.
+
+GLM is a math library. It defines data types such as vec2, vec3, vec4 (vectors) which you can multiply, add, subtract, and lots more. It's very useful if you need to do a lot of math. Note: GLM works in C++, not C.
+
+My "vectors.h" file is basically a smaller, simpler version of GLM, with less features, but it works in C.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+== How can OpenGL VBO functionality work with both 'array of structs' and 'struct of arrays'? ==
+
+For each property (position, color, etc), you specify a pointer and a 'stride' value.
+So for 'struct of arrays', each pointer points to a different array, and the 'stride' value is just the size of one vertex's data in that array.
+And for 'array of structs', each pointer points to a member of the struct (i.e. dots[0].pos, dots[0].color, etc), and the 'stride' value is the size of the entire struct.
+
+
+== How are VBOs and VAOs different? They use mostly the same functions? ==
+
+VBOs have a few extra 'buffer' functions that VAOs don't use.
+As for the functions in common: Some of the params are treated differently. With VAOs, you pass a (void*) pointer. With VBOs, you repurpose those params by casting a 'size_t bytes_offset' to 'void*'.
+
+So far, I've found that VBOs are more useful - particularly for dynamic sets of points. For more info, see my VBO examples.
+
+
+
+
+== Can tiny points (say, 2 pixels wide) be rendered faster than medium-sized points (say, 8 pixels wide)? ==
+
+Sadly, no. It's the same problem with small triangles.
+GPUs don't do a very good job of parallellizing multiple triangles/point-sprites. They mostly just parallellize the pixels WITHIN a triangle/point-sprite. If the number of pixels is less than the number of GPU cores involved, the other cores just sit idle and there's no performance gain.
+I tried doing some research and I couldn't get a full answer. Apparently some GPUs process pixels(fragments) in blocks of 8x8, with 64 cores assigned to the task. Does this mean that if your GPU has 1024 cores, it could draw 16 different triangles in parallel (as long as each triangle is small enough to fit in an 8x8 box, and each triangle is in a different part of the screen)? Maybe. But I've also read other articles that say that GPUs can never draw more triangles per second than their clock speed. This appears to contradict that. Either way, it seems that a 2x2 point sprite won't be drawn any faster than an 8x8 point sprite, but both might at least be faster than an 16x16 point sprite.
+When I first got into OpenGL, I was hoping it could draw point clouds (of 1-pixel points) using only 1 GPU core per point. That would have meant that a good graphics card could easily render clouds of 1 billion points at 60 fps. But I guess not. If the max number of points is limited by the clock speed, then it doesn't matter how many cores your GPU has. More cores can only help with bigger point sprites, not more points. Please correct me if I'm wrong.
+
+
+
+
+

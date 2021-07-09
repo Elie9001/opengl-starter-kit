@@ -1,0 +1,158 @@
+= Purpose =
+
+This project makes it easy to write 2D & 3D graphics programs in C (using OpenGL).
+
+For years, I had been wanting to work with OpenGL but couldn't get past all the nasty boilerplate code. It took me weeks just to figure out how to make a program that runs at all, let alone do anything interesting. Knowing this, there are probably millions of brilliant creative people out there who would love to make cool games/demos/visuals but don't know how to get started.
+That's why I made this kit.
+
+= How to get started =
+
+Open the 'demos' or 'tutorials' folder.
+
+Each c file is a separate program.
+
+== Linux ==
+
+To compile & run a program, use the 'build-run' script.
+For example, open a terminal, enter the 'demos' folder, and type the command:
+  ../build-run stars
+
+This will compile stars.c, and then run it.
+
+== Windows ==
+
+You can use Visual Studio to compile the code.
+Include libraries: GL and GLUT.
+
+I haven't tested on Windows yet. Please try it out and report back to me!
+
+
+
+
+= Files =
+
+The starter kit consists of mostly header files:
+
+== fullscreen_main.h ==
+
+Creates the context.
+This gets you started without having to write any ugly boilerplate code.
+How to use:
+You include this file, and then implement 3 functions:
+
+#include "fullscreen_main.h"
+void init() {} // Called once, at startup
+void draw() {} // Called at every frame, until the user presses ESC
+void done() {} // Called once, at shutdown
+
+You don't implement main().
+All of your OpenGL code will run in fullscreen mode (double buffer / vsync).
+
+See the first tutorial "hello world" for an example.
+
+
+
+== flatground.h ==
+
+This is the simplest "world viewer".
+
+Suppose you have a bunch of 3D stuff, and now you gotta position the camera in order to view it.
+
+With flatground.h, the user can move the camera around using the keyboard and mouse, like a video game.
+
+World coordinate system:
+- x and y represent north/south/east/west
+- z represents height/altitude
+- z=0 is the ground
+- z=1 is the height of your camera, unless you jump or duck.
+Controls:
+- to walk around: use arrow keys or W,A,S,D
+- to jump: PgUp or Q
+- to duck: PgDn or Z
+- to look around: move the mouse
+
+Other features available:
+- soft shadows on the ground
+- point sprite shaders
+
+[flatground.h includes fullscreen_main.h]
+
+How to use: See tutorials.
+
+
+
+
+== hypersphere.h ==
+
+Another "world viewer".
+
+This one gives you "6 degrees of freedom". There is no gravity.
+
+But also, the universe is actually a non-Euclidian "spherical space". So you can't get completely lost. If you keep flying in the same direction, eventually you end up where you started.
+
+World coordinate system:
+- Every vertex position is actually a 4D vector with length=1.
+  - All must satisfy the equation: x*x + y*y + z*z + w*w = 1
+
+If you don't like dealing with all this 4D weirdness, if you just want to play around with simple 3D space, you can still use hypersphere.h. Just scale down your entire world so [x,y,z] are tiny, for example less than 0.01.
+
+Controls:
+- similar to flatground.h, but with more inertia (like a spaceship), unless you hit Backspace to toggle a more "anchored" mode.
+
+Other features available:
+- point sprite shaders
+
+[hypersphere.h includes fullscreen_main.h]
+
+How to use: See tutorials.
+
+
+
+
+== vectors.h ==
+Defines data types:
+ vec2 (2D vector)
+ vec3 (3D vector)
+ vec4 (4D vector)
+Also defines some math operations for these vectors.
+Note: If you want something more full-featured, use GLM instead (another open-source math library).
+
+
+== line.h ==
+Draws lines in world space.
+This allows thick lines to be drawn in perspective (unlike OpenGL's default GL_LINES).
+
+Lines are drawn using immediate mode { glBegin(GL_TRIANGLE_STRIP); ... glEnd(); }
+To run it faster, you can put your line() calls inside display-lists.
+There is currently no support for VBOs.
+
+[line.h includes vectors.h]
+
+== text.h ==
+Some useful functions for displaying text in any corner of the screen.
+Caution: The text rendering is kind of slow.
+
+
+
+== build-run ==
+This is a Linux BASH script to compile and run a program.
+It's like a simpler version of 'make'.
+
+Suppose you have a demo called stars.c:
+To compile, link, and run it, you would type into a linux terminal:
+ ./build-run stars
+
+This is the same as:
+ gcc stars.c -o stars -ffast-math -O -lGL -lglut -lm -std=gnu99      &&
+ ./stars
+
+
+
+
+= System requirements =
+To compile & run the code, you need
+- gcc (GNU C Compiler) with the following libraries:
+  - GL     #include <GL/gl.h>
+  - GLUT   #include <GL/glut.h>
+
+Most demos should run pretty smoothly on any old laptop, even as old as 2007.
