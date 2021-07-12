@@ -176,7 +176,7 @@ void build_stuff()
   #endif
   int size = rand()%40+60;
   make_tree(x,y,0,0,0,1,64,32,32,size,12,4+rand()%7);
-  size *= 0.75; if (size < 1) continue;
+  size *= 0.8; if (size < 1) continue;
   if (nDots > MAXDOTS-3) break;
   dots[nDots].x = x+size*0.5;
   dots[nDots].y = y+size*0.288675135;
@@ -204,7 +204,7 @@ void build_stuff()
   nDots++;
   shadows[nShadows].x = x;
   shadows[nShadows].y = y;
-  shadows[nShadows].size = size*2;
+  shadows[nShadows].size = size*3;
   nShadows++;
  }
  for (i=0; i<30; i++)
@@ -217,7 +217,7 @@ void build_stuff()
   #endif
   int size = rand()%20+30;
   make_tree(x,y,0,0,0,1,64,32,32,size,9,5+rand()%7);
-  size *= 0.75; if (size < 1) continue;
+  size *= 0.8; if (size < 1) continue;
   if (nDots > MAXDOTS-3) break;
   dots[nDots].x = x+size*0.5;
   dots[nDots].y = y+size*0.288675135;
@@ -245,7 +245,7 @@ void build_stuff()
   nDots++;
   shadows[nShadows].x = x;
   shadows[nShadows].y = y;
-  shadows[nShadows].size = size*2;
+  shadows[nShadows].size = size*3;
   nShadows++;
  }
  #ifdef DISTRIBUTE_TREES
