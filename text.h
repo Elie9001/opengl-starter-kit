@@ -4,6 +4,8 @@
 
  Author: Elie Goldman Smith
  This code is too short/trivial to copyright, so it's in the public domain.
+
+ Feel free to copy this file into any project.
 ***/
 #include <string.h>
 

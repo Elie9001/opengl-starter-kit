@@ -6,7 +6,7 @@
  Author: Elie Goldman Smith
  This code is too simple to copyright, so it is in the public domain.
 ***/
-#include "../hypersphere.h"
+#include "hypersphere.h"
 
 GLuint dl_dots; // display-list
 
@@ -28,10 +28,10 @@ void init()
   w *= t; x *= t; y *= t; z *= t;
 
   // star size: random, but with a power-law distribution
-  point_size(0.002*pow(RND01()+0.0001, -0.33));
+  point_size(0.0016*pow(RND01()+0.0001, -0.33));
 
   // star color: random but bright
-  glColor4f(1.0+RND(),  1.0,  1.0+RND(),  1.0);
+  glColor4f(1.0f+RND(),  1.0f,  1.0f+RND(),  1.0f);
 
   // create the star
   glVertex4f(x,y,z,w);

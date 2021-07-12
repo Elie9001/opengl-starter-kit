@@ -5,7 +5,7 @@
  Author: Elie Goldman Smith
  This code is too simple to copyright, so it is in the public domain.
 ***/
-#define VIEWPORT_SCALE 1.25
+#define VIEWPORT_SCALE 1.5
 #define POINT_SIZE_LIMIT_STRING "0.5"
 #include "../hypersphere.h"
 #include "../vectors.h"

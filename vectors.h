@@ -6,6 +6,8 @@
  This code is uncopyrightable because it's essentially just standard math.
  Therefore it is in the public domain.
 
+ Feel free to copy this file into any project.
+
  Note: If you need something more heavy duty, I'd recommend using the GLM library instead (requires C++)
 ***/
 #pragma once

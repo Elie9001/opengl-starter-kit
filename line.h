@@ -17,6 +17,10 @@
 
  You should have received a copy of the GNU General Public License
  along with this.  If not, see <https://www.gnu.org/licenses/>.
+
+
+ tl;dr: Feel free to copy this file into any open-source project,
+        in accordance with GNU GPL V3.
 ***/
 #pragma once
 #include "vectors.h"

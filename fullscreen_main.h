@@ -48,18 +48,13 @@ void done();
  *
  *  #define USE_MULTISAMPLING   : Basic anti-aliasing mode. Good for triangles/quads/polygons, but useless for GL_POINTS, usually.
  *
-**/
-
-
-
-
-
-
-
-/**
+ *
+ *
  * Author: Elie Goldman Smith
  * This file is too trivial to copyright (since it's mostly boilerplate code),
  * so it's in the public domain.
+ *
+ * Feel free to copy this file into any project.
 **/
 #include <stdio.h>
 #include <stdlib.h>
