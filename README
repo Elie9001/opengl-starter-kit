@@ -1,15 +1,16 @@
 = Purpose =
 
-This project makes it easy to write 2D & 3D graphics programs in C (using OpenGL).
+This project is for people who want to write games or graphics demos in C (low-level OpenGL programming).
 
-For years, I had been wanting to work with OpenGL but couldn't get past all the nasty boilerplate code. It took me weeks just to figure out how to make a program that runs at all, let alone do anything interesting. Knowing this, there are probably millions of brilliant creative people out there who would love to make cool games/demos/visuals but don't know how to get started.
-That's why I made this kit.
+The starter kit consists of a few headers designed to:
+1. Make code cleaner: Hide any boilerplate code, so you can write your first program in just a few lines.
+2. Pre-implement very basic functionality such as 3D navigation and point sprites.
 
 = How to get started =
 
 Open the 'demos' or 'tutorials' folder.
 
-Each c file is a separate program.
+Each .c file is a separate program.
 
 == Linux ==
 
@@ -30,8 +31,6 @@ I haven't tested on Windows yet. Please try it out and report back to me!
 
 
 = Files =
-
-The starter kit consists of mostly header files:
 
 == fullscreen_main.h ==
 
