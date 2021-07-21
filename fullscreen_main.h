@@ -1,7 +1,7 @@
 /***
  Elie's OpenGL wrapper
  Creates a fullscreen vsync'd context with game-style access to keyboard & mouse.
- Version 1.0
+ Version 1.1
 ***/
 #pragma once
 
@@ -31,6 +31,11 @@ void done();
  *  keyboard_dz() : forward / backward
  *  keyboard_dy() :    jump / duck
  *  keyboard_dx() :      strafe
+ * 
+ * Other globals:
+ *  _screen_x, _screen_y      : The screen width & height, in pixels
+ *  _screen_size              : Alias for _screen_x (the width)
+ *  _global_argc, _global_argv: Same as argc & argv from main().
  *
  * Compiler flags needed when you use this header file:
  *      -ffast-math -O -lGL -lglut -lm
@@ -46,7 +51,11 @@ void done();
  *
  *  #define USE_ERROR_LOG       : Report OpenGL errors in the terminal.
  *
- *  #define USE_MULTISAMPLING   : Basic anti-aliasing mode. Good for triangles/quads/polygons, but useless for GL_POINTS, usually.
+ *  #define USE_PRE_INIT        : You get to define an extra function 'pre_init()' which gets called BEFORE the fullscreen window/context gets created. This gives you a chance to quit before the program starts, by setting _exit_the_program = GL_TRUE;
+ *                                One use-case might be: Your program requires command-line arguments, and if the args are missing, you want to only display a message in the terminal (no OpenGL).
+ *                                                       argc & argv are available as globals: _global_argc, _global_argv
+ *
+ *  #define USE_MULTISAMPLING   : Basic anti-aliasing mode. Good for triangles/quads/polygons, but useless for GL_POINTS sprites, usually.
  *
  *
  *
@@ -154,14 +163,13 @@ void hide_mouse() {
 void gcb_draw_frame()
 {
  draw();
- if (_exit_the_program == GL_TRUE) exit(0);
+ if (_exit_the_program) exit(0);
 
  // remove the KEY_FRESHLY_PRESSED
  for (int i=0; i<256; i++) {
   keymap[i]         &= 1;
   special_keymap[i] &= 1;
  }
-
  // smooth out the times when mouse dx & dy don't get updated
  _mouse_dx *= 0.875f;
  _mouse_dy *= 0.875f;
@@ -194,6 +202,10 @@ void gcb_errors(GLenum source, GLenum type, GLuint id, GLenum severity,
             type, severity, message);
 }
 #endif
+#ifdef USE_PRE_INIT
+void pre_init();
+#endif
+
 
 
 int    _global_argc;
@@ -202,6 +214,9 @@ char **_global_argv;
 int main(int argc, char **argv) {
  _global_argc = argc;
  _global_argv = argv;
+ #ifdef USE_PRE_INIT
+ pre_init();  if (_exit_the_program) return 1;
+ #endif
  #ifdef USE_MULTISAMPLING
  glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
  #else
