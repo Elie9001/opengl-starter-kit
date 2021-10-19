@@ -6,7 +6,7 @@
  Author: Elie Goldman Smith
  This code is too simple to copyright, so it is in the public domain.
 ***/
-#include "hypersphere.h"
+#include "../hypersphere.h"
 
 GLuint dl_dots; // display-list
 
